@@ -1,0 +1,458 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Store</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #f6f8fc;
+        }
+
+        .dashboard {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .sidebar .menu a:hover,
+        .sidebar .bottom-menu a:hover {
+            background: #d9e2ef;
+            color: #007bff;
+        }
+
+        .card, .graph-card, .stock-card {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            color: #333;
+            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .sidebar .menu a i,
+        .sidebar .bottom-menu a i {
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        .sidebar {
+            width: 220px;
+            background: white;
+            height: 100%;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+            .sidebar .logo {
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 30px;
+            }
+
+            .sidebar .menu a,
+            .sidebar .bottom-menu a {
+                display: block;
+                padding: 10px;
+                margin: 5px 0;
+                text-decoration: none;
+                color: #333;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+            }
+
+                .sidebar .menu a.active,
+                .sidebar .menu a:hover {
+                    background: #eef3ff;
+                    color: #007bff;
+                }
+
+        .main {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-and-toggle {
+            display: flex; 
+            align-items: center; 
+        }
+
+        .header input {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            width: 300px;
+        }
+
+        .header .dark-mode-logo {
+            font-size: 20px;
+            cursor: pointer;
+            margin-left: 10px; 
+        }
+
+        .user-profile img {
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+        }
+
+        .manage-store-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .manage-store-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+            .manage-store-header h2 {
+                font-size: 1.5em;
+                color: #333;
+            }
+
+        .add-store-button button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+            .add-store-button button:hover {
+                background: #0056b3;
+            }
+
+        .store-list {
+            margin-top: 20px;
+        }
+
+        .store-item {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .store-details {
+            flex-grow: 1;
+        }
+
+        .store-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .branch-name {
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .store-address, .store-contact {
+            color: #777;
+            font-size: 0.9em;
+            margin-bottom: 3px;
+        }
+
+        .store-actions button {
+            background: none;
+            color: #007bff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+            .store-actions button:hover {
+                background: #eef3ff;
+            }
+        .manage-store-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .manage-store-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+            .manage-store-header h2 {
+                font-size: 1.5em;
+                color: #333;
+            }
+
+        .add-store-button button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+            .add-store-button button:hover {
+                background: #0056b3;
+            }
+
+        .store-list {
+            margin-top: 20px;
+        }
+
+        .store-item {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .store-details {
+            flex-grow: 1;
+        }
+
+        .store-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .branch-name {
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .store-address, .store-contact {
+            color: #777;
+            font-size: 0.9em;
+            margin-bottom: 3px;
+        }
+
+        .store-actions button {
+            background: none;
+            color: #007bff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+            .store-actions button:hover {
+                background: #eef3ff;
+            }
+
+
+
+
+        body.dark-mode {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+
+            body.dark-mode .card,
+            body.dark-mode .graph-card,
+            body.dark-mode .stock-card,
+            body.dark-mode .sidebar,
+            body.dark-mode .main,
+            body.dark-mode .header input,
+            body.dark-mode .manage-store-section {
+                background-color: #1e1e1e;
+                color: #e0e0e0;
+                border-color: #333;
+                box-shadow: 0 1px 4px rgba(255, 255, 255, 0.05); 
+            }
+
+                body.dark-mode .sidebar .menu a,
+                body.dark-mode .sidebar .bottom-menu a {
+                    color: #ccc;
+                }
+
+                    body.dark-mode .sidebar .menu a:hover,
+                    body.dark-mode .sidebar .bottom-menu a:hover {
+                        background: #333;
+                        color: #fff;
+                    }
+
+            body.dark-mode .low-stock li {
+                background-color: #6b0000;
+                color: #ffeaea;
+            }
+
+            body.dark-mode .manage-store-header h2 {
+                color: #f0f0f0;
+            }
+
+            body.dark-mode .add-store-button button {
+                background-color: #333;
+                color: #5dade2;
+                border-color: #444;
+            }
+
+                body.dark-mode .add-store-button button:hover {
+                    background-color: #444;
+                    color: #6fc2e8;
+                }
+
+            body.dark-mode .store-item {
+                border-color: #333;
+            }
+
+            body.dark-mode .store-name {
+                color: #fff;
+            }
+
+            body.dark-mode .branch-name,
+            body.dark-mode .store-address,
+            body.dark-mode .store-contact {
+                color: #ccc;
+            }
+
+            body.dark-mode .store-actions button {
+                color: #5dade2;
+            }
+
+                body.dark-mode .store-actions button:hover {
+                    background-color: #333;
+                    color: #6fc2e8;
+                }
+
+
+  
+
+        </style>
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div>
+                <div class="logo">🏠</div>
+                <nav class="menu">
+                    <a href="/Dashboard/Index3"><i class="fas fa-chart-line"></i>Dashboard</a>
+                    <a href="/Inventory/Index"><i class="fas fa-boxes"></i>Inventory</a>
+                    <a href="/Inventory/Index2"><i class="fas fa-file-alt"></i>Reports</a>
+                    <a href="/Suppliers/Index"><i class="fas fa-truck"></i>Suppliers</a>
+                    <a href="/Order/Index"><i class="fas fa-pallet"></i> Materials</a>
+                    <a class="active" href="/Order/Index2"><i class="fas fa-store-alt"></i> Manage Store</a>
+                </nav>
+            </div>
+            <div class="bottom-menu">
+                <a href="~/Dashboard/Index"><i class="fas fa-sign-out-alt"></i>Log Out</a>
+            </div>
+        </aside>
+
+        <main class="main">
+            <header class="header">
+                <div class="search-and-toggle">
+                    <input type="text" placeholder="Search product, supplier, order" />
+                    <button id="darkToggle" title="Toggle Dark Mode">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+                <div class="user-profile">
+                    <img src="https://i.pravatar.cc/32" alt="User" />
+                </div>
+            </header>
+
+            <section class="manage-store-section">
+                <div class="manage-store-header">
+                    <h2>Manage Store</h2>
+                </div>
+
+                <div class="store-list">
+                    <div class="store-item">
+                        <div class="store-details">
+                            <div class="store-name">EVA Cosemetics</div>
+                            <div class="branch-name">Cosemetics Branch</div>
+                            <div class="store-address">6th Of October City</div>
+                            <div class="store-address">3222207</div>
+                            <div class="store-contact">02 - 38720587</div>
+                        </div>
+             
+                    </div>
+
+                    <div class="store-item">
+                        <div class="store-details">
+                            <div class="store-name">EVA Horus Store</div>
+                            <div class="branch-name">Pharmaceutical Branch</div>
+                            <div class="store-address">Boulevard Road / El Omraniya</div>
+                            <div class="store-address">3380304</div>
+                            <div class="store-contact">010 - 62100007</div>
+                        </div>
+
+                    </div>
+
+                    <div class="store-item">
+                        <div class="store-details">
+                            <div class="store-name">EVA Pharma</div>
+                            <div class="branch-name">Pharmaceutical Branch</div>
+                            <div class="store-address">Zawya Abou Muslim Street/Al Haram / Giza Governorate</div>
+                            <div class="store-address">3380304</div>
+                            <div class="store-contact">02 - 37764200</div>
+                        </div>
+    
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+          if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+
+        document.getElementById('darkToggle').addEventListener('click', function () {
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+        });
+    </script>
+</body>
+</html>

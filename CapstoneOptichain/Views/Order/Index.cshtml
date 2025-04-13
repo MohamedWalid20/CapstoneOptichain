@@ -1,0 +1,763 @@
+﻿@model IEnumerable<CapstoneOptichain.Models.RawMaterial>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inventory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        .overall-inventory {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        }
+
+            .overall-inventory h2 {
+                font-size: 1.5em;
+                margin-bottom: 15px;
+                color: #333;
+            }
+
+        .inventory-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .summary-item {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #eee;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+            .summary-item .value {
+                display: block;
+                font-size: 1.2em;
+                font-weight: bold;
+                color: #333;
+                margin-bottom: 5px;
+            }
+
+        .products-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .products-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+            .products-header h2 {
+                font-size: 1.5em;
+                color: #333;
+            }
+
+        .products-actions button {
+            background: #eef3ff;
+            color: #007bff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-left: 5px;
+        }
+
+            .products-actions button:hover {
+                background: #dbe6ff;
+            }
+
+        .products-table-container {
+            overflow-x: auto;
+        }
+
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .products-table th, .products-table td {
+                padding: 10px 15px;
+                text-align: left;
+                border-bottom: 1px solid #eee;
+                font-size: 0.9em;
+            }
+
+            .products-table th {
+                background: #f9f9f9;
+                font-weight: bold;
+                color: #333;
+            }
+
+        .availability {
+            font-weight: bold;
+        }
+
+        .in-stock {
+            color: #28a745;
+        }
+
+        .out-of-stock {
+            color: #dc3545;
+        }
+
+        .low-stock {
+            color: #ffc107;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+            .pagination button {
+                background: #f9f9f9;
+                color: #555;
+                border: 1px solid #ddd;
+                padding: 8px 12px;
+                border-radius: 6px;
+                cursor: pointer;
+            }
+
+                .pagination button:disabled {
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #f6f8fc;
+        }
+
+        .dashboard {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .sidebar .menu a:hover,
+        .sidebar .bottom-menu a:hover {
+            background: #d9e2ef;
+            color: #007bff;
+        }
+
+        .card, .graph-card, .stock-card {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            color: #333;
+            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .sidebar .menu a i,
+        .sidebar .bottom-menu a i {
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        .sidebar {
+            width: 220px;
+            background: white;
+            height: 100%;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+            .sidebar .logo {
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 30px;
+            }
+
+            .sidebar .menu a,
+            .sidebar .bottom-menu a {
+                display: block;
+                padding: 10px;
+                margin: 5px 0;
+                text-decoration: none;
+                color: #333;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+            }
+
+                .sidebar .menu a.active,
+                .sidebar .menu a:hover {
+                    background: #eef3ff;
+                    color: #007bff;
+                }
+
+        .main {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-and-toggle {
+            display: flex; 
+            align-items: center; 
+        }
+
+        .header input {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            width: 300px;
+        }
+
+        .header .dark-mode-logo {
+            font-size: 20px;
+            cursor: pointer;
+            margin-left: 10px; 
+        }
+
+        .user-profile img {
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+        }
+
+        .overall-inventory {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        }
+
+            .overall-inventory h2 {
+                font-size: 1.5em;
+                margin-bottom: 15px;
+                color: #333;
+            }
+
+        .inventory-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .summary-item {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #eee;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+            .summary-item .value {
+                display: block;
+                font-size: 1.2em;
+                font-weight: bold;
+                color: #333;
+                margin-bottom: 5px;
+            }
+
+        .products-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .products-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+            .products-header h2 {
+                font-size: 1.5em;
+                color: #333;
+            }
+
+        .products-actions button {
+            background: #eef3ff;
+            color: #007bff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-left: 5px;
+        }
+
+            .products-actions button:hover {
+                background: #dbe6ff;
+            }
+
+        .products-table-container {
+            overflow-x: auto;
+        }
+
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .products-table th, .products-table td {
+                padding: 10px 15px;
+                text-align: left;
+                border-bottom: 1px solid #eee;
+                font-size: 0.9em;
+            }
+
+            .products-table th {
+                background: #f9f9f9;
+                font-weight: bold;
+                color: #333;
+            }
+
+        .availability {
+            font-weight: bold;
+        }
+
+        .in-stock {
+            color: #28a745;
+        }
+
+        .out-of-stock {
+            color: #dc3545;
+        }
+
+        .low-stock {
+            color: #ffc107;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(5px);
+            background-color: rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 400px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+
+            .modal-content h2 {
+                margin-bottom: 15px;
+            }
+
+            .modal-content input {
+                width: 100%;
+                padding: 8px;
+                margin: 10px 0;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+
+
+
+
+        body.dark-mode {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+
+            body.dark-mode .card,
+            body.dark-mode .graph-card,
+            body.dark-mode .stock-card,
+            body.dark-mode .sidebar,
+            body.dark-mode .main,
+            body.dark-mode .header input,
+            body.dark-mode .overall-inventory,
+            body.dark-mode .products-section {
+                background-color: #1e1e1e;
+                color: #e0e0e0;
+                border-color: #333;
+                box-shadow: 0 1px 4px rgba(255, 255, 255, 0.05); 
+            }
+
+                body.dark-mode .sidebar .menu a,
+                body.dark-mode .sidebar .bottom-menu a {
+                    color: #ccc;
+                }
+
+                    body.dark-mode .sidebar .menu a:hover,
+                    body.dark-mode .sidebar .bottom-menu a:hover {
+                        background: #333;
+                        color: #fff;
+                    }
+
+            body.dark-mode .low-stock li {
+                background-color: #6b0000;
+                color: #ffeaea;
+            }
+
+            body.dark-mode .overall-inventory h2,
+            body.dark-mode .products-header h2 {
+                color: #f0f0f0;
+            }
+
+            body.dark-mode .inventory-summary .summary-item {
+                background-color: #2c2c2c;
+                color: #ccc;
+                border-color: #444;
+            }
+
+                body.dark-mode .inventory-summary .summary-item .value {
+                    color: #fff;
+                }
+
+            body.dark-mode .products-actions button {
+                background-color: #333;
+                color: #5dade2;
+                border-color: #444;
+            }
+
+                body.dark-mode .products-actions button:hover {
+                    background-color: #444;
+                    color: #6fc2e8;
+                }
+
+            body.dark-mode .products-table th,
+            body.dark-mode .products-table td {
+                border-bottom-color: #333;
+                color: #e0e0e0;
+            }
+
+            body.dark-mode .products-table th {
+                background-color: #333;
+                color: #f0f0f0;
+            }
+
+            body.dark-mode .pagination {
+                color: #ccc;
+            }
+
+                body.dark-mode .pagination button {
+                    background-color: #333;
+                    color: #e0e0e0;
+                    border-color: #444;
+                }
+
+                    body.dark-mode .pagination button:disabled {
+                        color: #666;
+                        border-color: #555;
+                    }
+
+            body.dark-mode .modal-overlay {
+                background-color: rgba(0, 0, 0, 0.6) !important; 
+                backdrop-filter: blur(10px) !important; 
+            }
+
+            body.dark-mode .modal-content {
+                background-color: #2c2c2c !important;
+                color: #e0e0e0 !important;
+                box-shadow: 0 0 20px rgba(255, 255, 255, 0.1) !important;
+            }
+
+                body.dark-mode .modal-content h2 {
+                    color: #fff !important;
+                    border-bottom: 1px solid #444 !important;
+                    padding-bottom: 10px;
+                    margin-bottom: 15px;
+                }
+
+                body.dark-mode .modal-content label {
+                    color: #ccc !important;
+                }
+
+                body.dark-mode .modal-content input {
+                    background-color: #1e1e1e !important;
+                    color: #e0e0e0 !important;
+                    border-color: #333 !important;
+                }
+
+                body.dark-mode .modal-content .btn-primary { 
+                    background-color: #0056b3 !important; 
+                    color: #fff !important;
+                    border-color: #004494 !important;
+                }
+
+                    body.dark-mode .modal-content .btn-primary:hover {
+                        background-color: #004494 !important;
+                    }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div>
+                <div class="logo">🏠</div>
+                <nav class="menu">
+                    <a href="/Dashboard/Index3"><i class="fas fa-chart-line"></i>Dashboard</a>
+                    <a href="/Inventory/Index"><i class="fas fa-boxes"></i>Inventory</a>
+                    <a href="/Inventory/Index2"><i class="fas fa-file-alt"></i>Reports</a>
+                    <a href="/Suppliers/Index"><i class="fas fa-truck"></i>Suppliers</a>
+                    <a class="active" href="/Order/Index"><i class="fas fa-pallet"></i> Materials</a>
+                    <a href="/Order/Index2"><i class="fas fa-store-alt"></i> Manage Store</a>
+                </nav>
+            </div>
+            <div class="bottom-menu">
+                <a href="~/Dashboard/Index"><i class="fas fa-sign-out-alt"></i>Log Out</a>
+            </div>
+        </aside>
+
+        <main class="main">
+            <header class="header">
+                <div class="search-and-toggle">
+                    <input type="text" placeholder="Search product, supplier, order" />
+                    <button id="darkToggle" title="Toggle Dark Mode">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+                <div class="user-profile">
+                    <img src="https://i.pravatar.cc/32" alt="User" />
+                </div>
+            </header>
+
+            <section class="overall-inventory">
+                <h2>Overall Materials</h2>
+                <div class="inventory-summary">
+                    <div class="summary-item">
+                        <span class="value">14</span>
+                        <span>Total Materials</span>
+                        <span>Last 7 days</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="value">868</span>
+                        <span>Total Recevied</span>
+                        <span>Last 7 days</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="value">5</span>
+                        <span>Total Returned</span>
+                        <span>Last 7 days</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="value">₹25000</span>
+                        <span>On The Way</span>
+                        <span>Last 7 days</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="value">₹2500</span>
+                        <span>Cost</span>
+                        <span>Last 7 days</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="value">12 Materials, 2 Not in stock</span>
+                        <span>Low Stocks</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="products-section">
+                <div class="products-header">
+                    <h2>Raw Materials</h2>
+                    <div class="products-actions">
+                        <button class="add-product-button">&#10010; Add RawMaterial</button>
+
+                        <div id="addProductModal" class="modal-overlay hidden">
+                            <div class="modal-content">
+                                <h2>Add New Material</h2>
+                                <form method="post" action="/Order/Create">
+                                    <div class="form-group mb-3">
+                                        <label>Name</label>
+                                        <input type="text" name="name" class="form-control" required />
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label>Quantity</label>
+                                        <input type="text" name="Quantity" class="form-control" required />
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <button>&#128269; Filters</button>
+                        <button id="downloadTable">&#128196; Download all</button>
+                    </div>
+                </div>
+                <div class="products-table-container">
+                    <table class="products-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var x in Model)
+                            {
+                                <tr>
+                                    <td>@x.name</td>
+                                    <td>@x.Quantity</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination">
+                    <button disabled>Previous</button>
+                    <span>Page 1 of 10</span>
+                    <button>Next</button>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script>
+        window.onload = function () {
+            const modal = document.getElementById("addProductModal");
+
+            document.querySelector(".add-product-button").addEventListener("click", () => {
+                modal.classList.remove("hidden");
+            });
+
+            function closeModal() {
+                modal.classList.add("hidden");
+            }
+        };
+
+
+
+
+          if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+
+        document.getElementById('darkToggle').addEventListener('click', function () {
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+
+
+
+
+
+
+
+
+
+                window.onload = function () {
+            const modal = document.getElementById("addProductModal");
+            const downloadButton = document.getElementById("downloadTable"); 
+
+            document.querySelector(".add-product-button").addEventListener("click", () => {
+                modal.classList.remove("hidden");
+            });
+
+            function closeModal() {
+                modal.classList.add("hidden");
+            }
+
+            function downloadMaterialsTableAsCSV() {
+                const table = document.querySelector(".products-table");
+                const rows = table.querySelectorAll("tr");
+
+                const headers = [];
+                const headerRow = rows[0];
+                const headerCells = headerRow.querySelectorAll("th");
+                headerCells.forEach(cell => {
+                    headers.push(cell.textContent);
+                });
+
+                const dataRows = [];
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    const cells = row.querySelectorAll("td");
+                    const rowData = [];
+                    cells.forEach(cell => {
+                        rowData.push(cell.textContent);
+                    });
+                    dataRows.push(rowData.join(",")); 
+                }
+
+                const csvContent = headers.join(",") + "\n" + dataRows.join("\n");
+
+                const link = document.createElement("a");
+                link.setAttribute("href", "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent));
+                link.setAttribute("download", "materials_data.csv"); 
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link); 
+            }
+
+            downloadButton.addEventListener("click", downloadMaterialsTableAsCSV);
+        };
+
+    
+    </script>
+</body>
+</html>

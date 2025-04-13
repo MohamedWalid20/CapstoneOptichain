@@ -1,0 +1,241 @@
+﻿<link href="~/Index2.css" rel="stylesheet" />
+<div class="container">
+        <div class="logo">
+        <img src="@Url.Content("~/css/logo with word.png")" alt="OptiChain Logo">
+        </div>
+        <div class="login-section">
+        <img src="@Url.Content("~/css/logo.png")" alt="Login Icon" class="login-icon">
+            <h2>Create An Account</h2>
+            <p>Start your 30-day free trial.</p>
+        <form action="/Dashboard/Create" method="post">
+                <label for="title">Name</label>
+            <input name="name" type="text" id="name" placeholder="Enter your Name" class="form-control" required>
+
+                <label for="email">Email</label>
+            <input name="email" type="email" id="email" placeholder="Enter your email" class="form-control" required>
+
+                <label for="password">Password</label>
+            <input name="password" type="password" id="password" placeholder="********" class="form-control" required>
+
+                <label for="title">PhoneNumber</label>
+            <input name="phone_number" type="text" id="phone_number" placeholder="Enter Your Phone Number" class="form-control" required>
+
+                <label for="title">Role</label>
+            <select name="role" id="role" class="form-control" required>
+                <option value="">-- Select Role --</option>
+                <option value="worker">Worker</option>
+                <option value="manager">Manager</option>
+            </select>
+
+            <button type="submit" class="btn-primary">Sign in</button>
+
+                <div class="options">
+                    <label><input type="checkbox"> Remember for 30 days</label>
+                <a href="~/Dashboard/Index4">Forgot password</a>
+            </div>
+
+               
+        </form>
+
+                <button type="button" class="btn-google">
+            <img src="@Url.Content("~/css/Google.png")" alt="Google Icon"> Sign in with Google
+                </button>
+        <p class="signup-text">Don't have an account? <a href="~/Dashboard/Index">Sign In</a></p>
+        </div>
+    </div>
+
+<style>
+
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f8f9fa;
+    }
+
+    .container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 80%;
+        max-width: 1000px;
+        background: white;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 50%;
+    }
+
+        .logo img {
+            max-width: 500px;
+            height: auto;
+        }
+
+    .login-section {
+        flex: 1;
+        text-align: center;
+        width: 50%;
+    }
+
+    .login-icon {
+        display: block;
+        margin: 0 auto 10px;
+        width: 90px;
+        animation: rotateIcon 2s ease-in-out infinite alternate; 
+    }
+
+    h2 {
+        text-align: center;
+        font-size: 24px;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    p {
+        text-align: center;
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: 320px;
+        margin: 0 auto;
+    }
+
+    label {
+        font-weight: bold;
+        font-size: 14px;
+        margin-bottom: 5px;
+        text-align: left;
+    }
+
+    input {
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .options {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+
+        .options a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-bottom: 10px;
+        width: 100%;
+        animation: pulse 1.5s infinite alternate;
+    }
+
+    .btn-google {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+        color: #333;
+        border: 1px solid #ccc;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100%;
+    }
+
+        .btn-google img {
+            width: 20px;
+            margin-right: 10px;
+        }
+
+    .signup-text {
+        text-align: center;
+        margin-top: 10px;
+        font-size: 14px;
+    }
+
+        .signup-text a {
+            color: #007bff;
+            text-decoration: none;
+        }
+</style>
+<script>
+        const googleButton = document.querySelector('.btn-google');
+    const googleAuthUrl = 'https://accounts.google.com/o/oauth2/v2/auth?';
+
+    const clientId = 'your_client_id';
+    const scope = 'email profile';
+    const redirectUri = window.location.href;
+    const responseType = 'code';
+
+    googleButton.addEventListener('click', () => {
+        const authUrl = `${googleAuthUrl}client_id=${clientId}&scope=${scope}&redirect_uri=${redirectUri}&response_type=${responseType}`;
+        window.location.href = authUrl;
+    });
+        window.addEventListener('load', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        if (code) {
+            const clientId = 'your_client_id';
+            const clientSecret = 'your_client_secret';
+            const redirectUri = window.location.href;
+            const tokenEndpoint = 'https://oauth2.googleapis.com/token';
+
+            const tokenRequest = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `code=${code}&redirect_uri=${redirectUri}&client_id=${clientId}&client_secret=${clientSecret}&grant_type=authorization_code`
+            };
+
+            fetch(tokenEndpoint, tokenRequest)
+                .then(response => response.json())
+                .then(data => {
+                    const accessToken = data.access_token;
+                })
+                .catch(error => console.error(error));
+        }
+    });
+        const accessToken = 'your_access_token';
+
+    fetch('https://people.googleapis.com/v1/people/me', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+    })
+    .catch(error => console.error(error));
+</script>

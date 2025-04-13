@@ -1,0 +1,447 @@
+﻿<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div>
+                <div class="logo">🏠</div>
+                <nav class="menu">
+                    <a class="active"><i class="fas fa-chart-line"></i> Dashboard</a>
+                    <a href="/Inventory/Index"><i class="fas fa-boxes"></i> Inventory</a>
+                    <a href="/Inventory/Index2"><i class="fas fa-file-alt"></i> Reports</a>
+                    <a href="/Suppliers/Index"><i class="fas fa-truck"></i> Suppliers</a>
+                    <a href="/Order/Index"><i class="fas fa-pallet"></i> Materials</a>
+                    <a href="/Order/Index2"><i class="fas fa-store-alt"></i> Manage Store</a>
+                </nav>
+            </div>
+            <div class="bottom-menu">
+                <a href="~/Dashboard/Index"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+            </div>
+        </aside>
+
+        <main class="main">
+            <header class="header">
+                <div class="search-and-toggle">
+                    <input type="text" placeholder="Search product, supplier, order" />
+                    <button id="darkToggle" title="Toggle Dark Mode">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+                <div class="user-profile">
+                    <img src="https://i.pravatar.cc/32" alt="User" />
+                </div>
+            </header>
+
+            <section class="cards-row">
+                <div class="card">
+                    <h4>Sales Overview</h4>
+                    <div class="card-details">
+                        <span>₹ 832 Sales</span>
+                        <span>₹ 18,300 Revenue</span>
+                        <span>₹ 868 Profit</span>
+                        <span>₹ 17,432 Cost</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <h4>Purchase Overview</h4>
+                    <div class="card-details">
+                        <span>82 Purchase</span>
+                        <span>₹ 13,573 Cost</span>
+                        <span>5 Cancel</span>
+                        <span>₹ 17,432 Return</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <h4>Inventory Summary</h4>
+                    <div class="card-details">
+                        <span>868 Quantity in Hand</span>
+                        <span>200 To be received</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <h4>Product Summary</h4>
+                    <div class="card-details">
+                        <span>31 Suppliers</span>
+                        <span>21 Categories</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="middle-section">
+                <div class="graph-card">
+                    <h4>Sales & Purchase</h4>
+                    <canvas id="salesChart" height="120"></canvas>
+                </div>
+                <div class="graph-card">
+                    <h4>Order Summary</h4>
+                    <canvas id="orderChart" height="120"></canvas>
+                </div>
+            </section>
+
+            <section class="bottom-section">
+                <div class="stock-card">
+                    <h4>Top Selling Stock</h4>
+                    <ul>
+                        <li>Surf Excel — 30 sold — ₹100</li>
+                        <li>Rin — 21 sold — ₹207</li>
+                        <li>Parle G — 19 sold — ₹105</li>
+                    </ul>
+                </div>
+                <div class="stock-card">
+                    <h4>Low Quantity Stock</h4>
+                    <ul class="low-stock">
+                        <li>Warfarin — 10 packets</li>
+                        <li>Leflunomide — 15 packets</li>
+                        <li>Toinlafate — 10 packets</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+
+               const isDark = localStorage.getItem('theme') === 'dark';
+
+        const salesCtx = document.getElementById('salesChart').getContext('2d');
+        new Chart(salesCtx, {
+          type: 'bar',
+          data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr'],
+            datasets: [
+              {
+                label: 'Purchase',
+                data: [40000, 45000, 30000, 35000],
+                backgroundColor: '#4FADF7'
+              },
+              {
+                label: 'Sales',
+                data: [35000, 40000, 25000, 30000],
+                backgroundColor: '#35C66B'
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  color: isDark ? '#fff' : '#000'
+                }
+              }
+            },
+            scales: {
+              x: {
+                ticks: { color: isDark ? '#fff' : '#000' },
+                grid: { color: isDark ? '#444' : '#ccc' }
+              },
+              y: {
+                beginAtZero: true,
+                ticks: { color: isDark ? '#fff' : '#000' },
+                grid: { color: isDark ? '#444' : '#ccc' }
+              }
+            }
+          }
+        });
+
+        const orderCtx = document.getElementById('orderChart').getContext('2d');
+        new Chart(orderCtx, {
+          type: 'line',
+          data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr'],
+            datasets: [
+              {
+                label: 'Ordered',
+                data: [2000, 3000, 2500, 2800],
+                borderColor: '#FFA600',
+                fill: false,
+                tension: 0.4
+              },
+              {
+                label: 'Delivered',
+                data: [1800, 2700, 2200, 2900],
+                borderColor: '#007bff',
+                fill: false,
+                tension: 0.4
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  color: isDark ? '#fff' : '#000'
+                }
+              }
+            },
+            scales: {
+              x: {
+                ticks: { color: isDark ? '#fff' : '#000' },
+                grid: { color: isDark ? '#444' : '#ccc' }
+              },
+              y: {
+                beginAtZero: true,
+                ticks: { color: isDark ? '#fff' : '#000' },
+                grid: { color: isDark ? '#444' : '#ccc' }
+              }
+            }
+          }
+        });
+
+
+
+
+
+             if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+
+        document.getElementById('darkToggle').addEventListener('click', function () {
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+        });
+    </script>
+
+</body>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    html, body {
+        height: 100%;
+        overflow: hidden;
+        font-family: 'Inter', sans-serif;
+        background: #f6f8fc;
+    }
+
+    .dashboard {
+        display: flex;
+        height: 100vh;
+        width: 100vw;
+    }
+
+    .sidebar .menu a:hover,
+    .sidebar .bottom-menu a:hover {
+        background: #d9e2ef; 
+        color: #007bff;
+    }
+
+    .card, .graph-card, .stock-card {
+        background: #f9f9f9;
+        padding: 15px;
+        border-radius: 10px;
+        font-size: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        color: #333;
+        transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .sidebar .menu a i,
+    .sidebar .bottom-menu a i {
+        margin-right: 10px;
+        font-size: 16px; 
+    }
+    .sidebar {
+        width: 220px;
+        background: white;
+        height: 100%;
+        padding: 20px;
+        border-right: 1px solid #ddd;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+        .sidebar .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .sidebar .menu a,
+        .sidebar .bottom-menu a {
+            display: block;
+            padding: 10px;
+            margin: 5px 0;
+            text-decoration: none;
+            color: #333;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+            .sidebar .menu a.active,
+            .sidebar .menu a:hover {
+                background: #eef3ff;
+                color: #007bff;
+            }
+
+    .main {
+        flex: 1;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+   
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .search-and-toggle {
+        display: flex; 
+        align-items: center; 
+    }
+
+    #darkToggle {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 18px;
+        margin-left: 10px;
+    }
+    .header input {
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        width: 300px;
+    }
+
+
+    .user-profile img {
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+    }
+
+    .cards-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin: 10px 0;
+    }
+
+    .card {
+        background: white;
+        padding: 10px;
+        border-radius: 10px;
+        font-size: 12px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+
+        .card h4 {
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+    .card-details span {
+        display: block;
+        margin: 4px 0;
+    }
+
+    .middle-section {
+        display: flex;
+        width: 90%;
+        margin: 0 auto; 
+        gap: 10px;
+    }
+
+    .graph-card {
+        flex: 0 0 auto;
+        width: 500px;
+        background: white;
+        border-radius: 10px;
+        padding: 10px;
+    }
+
+        .graph-card h4 {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+    .bottom-section {
+        display: flex;
+        gap: 10px;
+        margin-top: 5px;
+    }
+
+    .stock-card {
+        flex: 1;
+        background: white;
+        border-radius: 10px;
+        padding: 10px;
+        font-size: 13px;
+    }
+
+        .stock-card h4 {
+            margin-bottom: 5px;
+        }
+
+        .stock-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .stock-card li {
+            margin: 4px 0;
+        }
+
+    .low-stock li {
+        background-color: #ffe5e5;
+        color: #cc0000;
+        padding: 5px;
+        border-radius: 5px;
+    }
+
+
+
+
+    body.dark-mode {
+        background-color: #121212;
+        color: #e0e0e0;
+    }
+
+        body.dark-mode .card,
+        body.dark-mode .graph-card,
+        body.dark-mode .stock-card,
+        body.dark-mode .sidebar,
+        body.dark-mode .main,
+        body.dark-mode .header input {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+            border-color: #333;
+        }
+
+            body.dark-mode .sidebar .menu a,
+            body.dark-mode .sidebar .bottom-menu a {
+                color: #ccc;
+            }
+
+                body.dark-mode .sidebar .menu a:hover,
+                body.dark-mode .sidebar .bottom-menu a:hover {
+                    background: #333;
+                    color: #fff;
+                }
+
+        body.dark-mode .low-stock li {
+            background-color: #6b0000;
+            color: #ffeaea;
+        }
+
+</style>
